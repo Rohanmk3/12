@@ -1,0 +1,208 @@
+import numpy as np
+
+inputs = np.array([
+    [0, 0],
+    [0, 1],
+    [1, 0],
+    [1, 1]
+])
+expected_outputs = np.array([0, 0, 0, 1])
+
+w1, w2 = 1.2, 0.6
+bias =-1.0
+threshold = 1
+learning_rate = 0.5
+
+
+def activation_function(net_input):
+	return 1 if net_input >= threshold else 0
+
+epochs = 0
+while True:
+error_count = 0  # Track the number of misclassifications
+for i in range(len(inputs)):
+	net_input = w1 * inputs[i][0] + w2 * inputs[i][1] + bias
+	output = activation_function(net_input)
+	error = expected_outputs[i] - output
+	if error != 0:
+		w1 += learning_rate * error * inputs[i][0]
+		w2 += learning_rate * error * inputs[i][1]
+		bias += learning_rate * error  # Update bias as well
+		error_count += 1
+epochs += 1
+if error_count == 0:
+	break
+
+print(f"Training completed in {epochs} epochs")
+print(f"Final weights: w1 = {w1}, w2 = {w2}, bias = {bias}")
+print("Testing perceptron for AND gate:")
+for i in range(len(inputs)):
+	net_input = w1 * inputs[i][0] + w2 * inputs[i][1] + bias
+	output = activation_function(net_input)
+	print(f"Input: {inputs[i]}, Output: {output}, Expected: {expected_outputs[i]}")
+
+
+77
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import accuracy_score
+from sklearn.preprocessing import LabelEncoder
+
+data = pd.read_csv("Iris.csv")
+# Select features and target
+X = data.drop("Species", axis=1)
+y = data['Species']
+
+X
+
+y
+
+le = LabelEncoder()
+y = le.fit_transform(y)
+
+y
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+gnb = GaussianNB()
+gnb.fit(X_train, y_train)
+
+y_pred = gnb.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
+print(f"The Accuracy of Prediction on Iris Flower is: {accuracy}")
+
+df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+print(df)
+
+88
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import MultinomialNB, GaussianNB
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics import accuracy_score, f1_score
+import matplotlib.pyplot as plt
+
+sms_data = pd.read_csv("spam.csv", encoding='latin-1')
+
+sms_data = sms_data[['v1', 'v2']]
+sms_data = sms_data.rename(columns={'v1': 'label', 'v2': 'text'}) 
+
+sms_data
+
+X = sms_data['text']
+y = sms_data['label']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+class_distribution = sms_data['label'].value_counts()
+class_distribution.plot(kind='pie', autopct='%1.1f%%', colors=['#66b3ff','#99ff99'])
+plt.title('Distribution of Spam and Ham Messages')
+plt.show()
+
+vectorizer = CountVectorizer()
+X_train_vec = vectorizer.fit_transform(X_train)
+X_test_vec = vectorizer.transform(X_test)
+
+X_train_vec
+
+mnb = MultinomialNB(alpha=0.8, fit_prior=True, force_alpha=True)
+mnb.fit(X_train_vec, y_train)
+
+gnb = GaussianNB()
+gnb.fit(X_train_vec.toarray(), y_train)
+
+y_pred_mnb = mnb.predict(X_test_vec)
+accuracy_mnb = accuracy_score(y_test, y_pred_mnb)
+f1_mnb = f1_score(y_test, y_pred_mnb, pos_label='spam')
+y_pred_gnb = gnb.predict(X_test_vec.toarray())
+accuracy_gnb = accuracy_score(y_test, y_pred_gnb)
+f1_gnb = f1_score(y_test, y_pred_gnb, pos_label='spam')
+print("Multinomial Naive Bayes - Accuracy:", accuracy_mnb)
+print("Multinomial Naive Bayes - F1-score for 'spam' class:", f1_mnb)
+print("Gaussian Naive Bayes - Accuracy:", accuracy_gnb)
+print("Gaussian Naive Bayes - F1-score for 'spam' class:", f1_gnb)
+
+99
+
+from sklearn.datasets import load_iris
+
+iris = load_iris()
+
+
+X = iris.data 
+y = iris.target
+
+num_samples = X.shape[0]  # The number of rows represents the number of samples
+print(f'Number of samples in the Iris dataset: {num_samples}')
+
+
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=1)
+
+train_samples = X_train.shape[0]  # Number of rows in X_train
+test_samples = X_test.shape[0]    
+
+print(f'Number of samples in the training set: {train_samples}')
+print(f'Number of samples in the testing set: {test_samples}')
+
+from sklearn.ensemble import RandomForestClassifier
+rf = RandomForestClassifier(n_estimators = 100)  
+rf.fit(X_train, y_train)
+y_pred = rf.predict(X_test)
+
+from sklearn import metrics
+print("Random Forest model accuracy(in %):", metrics.accuracy_score(y_test, y_pred)*100)
+
+print("Actual values:", y_test)
+print("Predicted values:", y_pred)
+
+import pandas as pd
+df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+print(df)
+
+label_mapping = {0: "iris-setosa", 1: "iris-versicolor", 2: "iris-virginica"}
+
+y_pred=rf.predict([[3, 3, 2, 2]])
+print("Result is:", label_mapping[y_pred[0]]) 
+
+10
+
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import AdaBoostClassifier
+
+data = pd.read_csv("Iris.csv")
+print(data.shape)
+
+data.head()
+
+data = data.drop('Id',axis=1)
+X = data.iloc[:,:-1]
+y = data.iloc[:,-1]
+print("Shape of X is %s and shape of y is %s"%(X.shape,y.shape))
+
+total_classes = y.nunique()
+print("Number of unique species in dataset are: ",total_classes)
+
+distribution = y.value_counts()
+print(distribution)
+
+X_train, X_val, Y_train, Y_val = train_test_split( X, y, test_size=0.25, random_state=42)
+
+adb = AdaBoostClassifier()
+adb_model = adb.fit(X_train,Y_train)
+
+print("The accuracy of the model on validation set is", adb_model.score(X_val,Y_val))
+
+from sklearn.metrics import accuracy_score
+
+y_pred = adb_model.predict(X_val)
+accuracy = accuracy_score(Y_val, y_pred)
+print(f"The Accuracy of Prediction on Iris Flower is: {accuracy}")
+
+df = pd.DataFrame({'Actual': Y_val, 'Predicted': y_pred})
+print(df)
