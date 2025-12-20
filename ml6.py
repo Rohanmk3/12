@@ -1,0 +1,48 @@
+import numpy as np
+
+inputs = np.array([
+    [0, 0],
+    [0, 1],
+    [1, 0],
+    [1, 1]
+])
+
+expected_outputs = np.array([0, 0, 0, 1])
+
+w1, w2 = 1.2, 0.6
+bias = -1.0
+threshold = 1
+learning_rate = 0.5
+
+def activation_function(net_input):
+    return 1 if net_input >= threshold else 0
+
+epochs = 0
+
+while True:
+    error_count = 0
+
+    for i in range(len(inputs)):
+        net_input = w1 * inputs[i][0] + w2 * inputs[i][1] + bias
+        output = activation_function(net_input)
+        error = expected_outputs[i] - output
+
+        if error != 0:
+            w1 += learning_rate * error * inputs[i][0]
+            w2 += learning_rate * error * inputs[i][1]
+            bias += learning_rate * error
+            error_count += 1
+
+    epochs += 1
+
+    if error_count == 0:
+        break
+
+print(f"Training completed in {epochs} epochs")
+print(f"Final weights: w1 = {w1}, w2 = {w2}, bias = {bias}")
+
+print("Testing perceptron for AND gate:")
+for i in range(len(inputs)):
+    net_input = w1 * inputs[i][0] + w2 * inputs[i][1] + bias
+    output = activation_function(net_input)
+    print(f"Input: {inputs[i]}, Output: {output}, Expected: {expected_outputs[i]}")

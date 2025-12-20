@@ -1,0 +1,46 @@
+from sklearn.datasets import load_iris
+
+iris = load_iris()
+
+X = iris.data
+y = iris.target
+
+num_samples = X.shape[0] 
+print(f'Number of samples in the Iris dataset: {num_samples}')
+
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.3, random_state=1
+)
+
+train_samples = X_train.shape[0]  # Number of rows in X_train
+test_samples = X_test.shape[0]    # Number of rows in X_test
+print(f'Number of samples in the training set: {train_samples}')
+print(f'Number of samples in the testing set: {test_samples}')
+
+from sklearn.ensemble import RandomForestClassifier
+rf = RandomForestClassifier(n_estimators=100)
+rf.fit(X_train, y_train)
+
+y_pred = rf.predict(X_test)
+
+from sklearn import metrics
+print("Random Forest model accuracy(in %):", metrics.accuracy_score(y_test, y_pred) * 100)
+
+print("Actual values:", y_test)
+print("Predicted values:", y_pred)
+
+import pandas as pd
+df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+print(df)
+
+label_mapping = {
+    0: "iris-setosa",
+    1: "iris-versicolor",
+    2: "iris-virginica"
+}
+
+y_pred = rf.predict([[3, 3, 2, 2]])
+print("Result is:", label_mapping[y_pred[0]])
+
+
