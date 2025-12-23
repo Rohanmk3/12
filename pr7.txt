@@ -1,0 +1,35 @@
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import accuracy_score
+from sklearn.preprocessing import LabelEncoder
+
+data = pd.read_csv(r"E:\dataset\Iris.csv")
+
+X = data.drop("Species", axis=1)
+y = data['Species']
+
+X
+
+y
+
+le = LabelEncoder()
+y = le.fit_transform(y)
+
+y
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+gnb = GaussianNB()
+# Train the classifier on the training data
+gnb.fit(X_train, y_train)
+
+y_pred = gnb.predict(X_test)
+# Calculate the accuracy of the model
+accuracy = accuracy_score(y_test, y_pred)
+print(f"The Accuracy of Prediction on Iris Flower is: {accuracy}")
+
+df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+print(df)
+
